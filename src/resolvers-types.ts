@@ -19,12 +19,18 @@ export type Scalars = {
 export type Mutation = {
   __typename?: 'Mutation';
   postCreate: PostPayload;
+  postUpdate: PostPayload;
 };
 
 
 export type MutationPostCreateArgs = {
-  content: Scalars['String'];
-  title: Scalars['String'];
+  post: PostInput;
+};
+
+
+export type MutationPostUpdateArgs = {
+  post: PostInput;
+  postId: Scalars['ID'];
 };
 
 export type Post = {
@@ -35,6 +41,11 @@ export type Post = {
   published: Scalars['Boolean'];
   title: Scalars['String'];
   user: User;
+};
+
+export type PostInput = {
+  content?: InputMaybe<Scalars['String']>;
+  title?: InputMaybe<Scalars['String']>;
 };
 
 export type PostPayload = {
@@ -143,6 +154,7 @@ export type ResolversTypes = ResolversObject<{
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Mutation: ResolverTypeWrapper<{}>;
   Post: ResolverTypeWrapper<PostModel>;
+  PostInput: PostInput;
   PostPayload: ResolverTypeWrapper<Omit<PostPayload, 'post'> & { post?: Maybe<ResolversTypes['Post']> }>;
   Profile: ResolverTypeWrapper<Omit<Profile, 'user'> & { user: ResolversTypes['User'] }>;
   Query: ResolverTypeWrapper<{}>;
@@ -157,6 +169,7 @@ export type ResolversParentTypes = ResolversObject<{
   ID: Scalars['ID'];
   Mutation: {};
   Post: PostModel;
+  PostInput: PostInput;
   PostPayload: Omit<PostPayload, 'post'> & { post?: Maybe<ResolversParentTypes['Post']> };
   Profile: Omit<Profile, 'user'> & { user: ResolversParentTypes['User'] };
   Query: {};
@@ -166,7 +179,8 @@ export type ResolversParentTypes = ResolversObject<{
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  postCreate?: Resolver<ResolversTypes['PostPayload'], ParentType, ContextType, RequireFields<MutationPostCreateArgs, 'content' | 'title'>>;
+  postCreate?: Resolver<ResolversTypes['PostPayload'], ParentType, ContextType, RequireFields<MutationPostCreateArgs, 'post'>>;
+  postUpdate?: Resolver<ResolversTypes['PostPayload'], ParentType, ContextType, RequireFields<MutationPostUpdateArgs, 'post' | 'postId'>>;
 }>;
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = ResolversObject<{

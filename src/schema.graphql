@@ -3,7 +3,8 @@ type Query {
 }
 
 type Mutation {
-    postCreate(title: String!, content: String!) : PostPayload!
+    postCreate(post: PostInput!) : PostPayload!
+    postUpdate(postId: ID!, post: PostInput!) : PostPayload!
 }
 type PostPayload {
     userErrors: [UserError!]!
@@ -34,4 +35,9 @@ type Profile {
     id: ID!
     bio: String!
     user: User!
+}
+
+input PostInput{
+    title: String
+    content: String
 }
