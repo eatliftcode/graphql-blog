@@ -1,6 +1,8 @@
 import { Context } from "./index"
-import { Resolvers, MutationPostCreateArgs, PostPayload, Post, PostInput, MutationPostUpdateArgs, MutationPostDeleteArgs } from "./resolvers-types"
-
+import { Resolvers, MutationPostCreateArgs, MutationSignUpArgs, PostPayload, Post, PostInput, MutationPostUpdateArgs, MutationPostDeleteArgs } from "./resolvers-types"
+import validator from "validator"
+import bcrypt from "bcryptjs"
+import JWT from "jsonwebtoken"
 export const resolvers :Resolvers = {
         Query: {
             posts: async(_:any, __:any, {prisma}: Context) =>{
@@ -67,6 +69,34 @@ export const resolvers :Resolvers = {
                     }
                 })
                 return {userErrors: [], post}
+            },
+            signUp : async (_:any, args: MutationSignUpArgs, {prisma}: Context) => {
+                const {email, password, bio, name} = args
+                const isEmail = validator.isEmail(args.email)
+
+                if(!isEmail){
+                    return{userErrors: [{message: "Invalid email."}]}
+                }
+                const isValidPassword = validator.isLength(args.password,{min: 5} )
+                if(!isValidPassword){
+                    return{userErrors: [{message: "Invalid password."}]}
+                } 
+
+                const hashedPassword = await bcrypt.hash(args.password, 10)
+
+                const user = await prisma.user.create({
+                    data:{
+                        email,
+                        password: hashedPassword,
+                        name,
+                    }
+                })
+                const secretKey = process.env.JWT_SIGNATURE
+                const token = await JWT.sign({
+                    userId: user.id,
+                    email: user.email
+                }, secretKey!, {expiresIn: 360000} )
+                return {userErrors: [], token}
             }
     }
 }

@@ -21,6 +21,7 @@ export type Mutation = {
   postCreate: PostPayload;
   postDelete: PostPayload;
   postUpdate: PostPayload;
+  signUp: UserPayLoad;
 };
 
 
@@ -37,6 +38,14 @@ export type MutationPostDeleteArgs = {
 export type MutationPostUpdateArgs = {
   post: PostInput;
   postId: Scalars['ID'];
+};
+
+
+export type MutationSignUpArgs = {
+  bio: Scalars['String'];
+  email: Scalars['String'];
+  name: Scalars['String'];
+  password: Scalars['String'];
 };
 
 export type Post = {
@@ -84,6 +93,12 @@ export type User = {
 export type UserError = {
   __typename?: 'UserError';
   message: Scalars['String'];
+};
+
+export type UserPayLoad = {
+  __typename?: 'UserPayLoad';
+  token?: Maybe<Scalars['String']>;
+  userErrors: Array<UserError>;
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -167,6 +182,7 @@ export type ResolversTypes = ResolversObject<{
   String: ResolverTypeWrapper<Scalars['String']>;
   User: ResolverTypeWrapper<Omit<User, 'posts' | 'profile'> & { posts: Array<ResolversTypes['Post']>, profile: ResolversTypes['Profile'] }>;
   UserError: ResolverTypeWrapper<UserError>;
+  UserPayLoad: ResolverTypeWrapper<UserPayLoad>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -182,12 +198,14 @@ export type ResolversParentTypes = ResolversObject<{
   String: Scalars['String'];
   User: Omit<User, 'posts' | 'profile'> & { posts: Array<ResolversParentTypes['Post']>, profile: ResolversParentTypes['Profile'] };
   UserError: UserError;
+  UserPayLoad: UserPayLoad;
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   postCreate?: Resolver<ResolversTypes['PostPayload'], ParentType, ContextType, RequireFields<MutationPostCreateArgs, 'post'>>;
   postDelete?: Resolver<ResolversTypes['PostPayload'], ParentType, ContextType, RequireFields<MutationPostDeleteArgs, 'postId'>>;
   postUpdate?: Resolver<ResolversTypes['PostPayload'], ParentType, ContextType, RequireFields<MutationPostUpdateArgs, 'post' | 'postId'>>;
+  signUp?: Resolver<ResolversTypes['UserPayLoad'], ParentType, ContextType, RequireFields<MutationSignUpArgs, 'bio' | 'email' | 'name' | 'password'>>;
 }>;
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = ResolversObject<{
@@ -231,6 +249,12 @@ export type UserErrorResolvers<ContextType = any, ParentType extends ResolversPa
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type UserPayLoadResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserPayLoad'] = ResolversParentTypes['UserPayLoad']> = ResolversObject<{
+  token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  userErrors?: Resolver<Array<ResolversTypes['UserError']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type Resolvers<ContextType = any> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
@@ -239,5 +263,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Query?: QueryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UserError?: UserErrorResolvers<ContextType>;
+  UserPayLoad?: UserPayLoadResolvers<ContextType>;
 }>;
 
