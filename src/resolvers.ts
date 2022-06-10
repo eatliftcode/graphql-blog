@@ -1,5 +1,5 @@
 import { Context } from "./index"
-import { Resolvers, MutationPostCreateArgs, PostPayload, Post, PostInput, MutationPostUpdateArgs } from "./resolvers-types"
+import { Resolvers, MutationPostCreateArgs, PostPayload, Post, PostInput, MutationPostUpdateArgs, MutationPostDeleteArgs } from "./resolvers-types"
 
 export const resolvers :Resolvers = {
         Query: {
@@ -24,7 +24,7 @@ export const resolvers :Resolvers = {
                     }
                 })
             return {userErrors: [],post: result}
-        },
+            },
             postUpdate: async (_: any, args: MutationPostUpdateArgs, {prisma}: Context) => {
                 const {title, content} = args.post;
                 if(!args.postId){
@@ -49,6 +49,22 @@ export const resolvers :Resolvers = {
                 const post = await prisma.post.update({
                     where: {id : Number(args.postId)},
                     data: {...postToUpdate}
+                })
+                return {userErrors: [], post}
+            },
+            postDelete : async (_:any, args: MutationPostDeleteArgs, {prisma}: Context) => {
+                if(!args.postId){
+                    return {userErrors: [{message: "Post id not provided"}]}
+                }
+
+                const existingPost = await prisma.post.findUnique({where: {id: Number(args.postId)}})
+                if(!existingPost){
+                    return{userErrors: [{message: "Post not found"}]}
+                }
+                const post = await prisma.post.delete({
+                    where: {
+                        id: Number(args.postId)
+                    }
                 })
                 return {userErrors: [], post}
             }

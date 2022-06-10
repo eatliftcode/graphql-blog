@@ -19,12 +19,18 @@ export type Scalars = {
 export type Mutation = {
   __typename?: 'Mutation';
   postCreate: PostPayload;
+  postDelete: PostPayload;
   postUpdate: PostPayload;
 };
 
 
 export type MutationPostCreateArgs = {
   post: PostInput;
+};
+
+
+export type MutationPostDeleteArgs = {
+  postId: Scalars['ID'];
 };
 
 
@@ -180,6 +186,7 @@ export type ResolversParentTypes = ResolversObject<{
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   postCreate?: Resolver<ResolversTypes['PostPayload'], ParentType, ContextType, RequireFields<MutationPostCreateArgs, 'post'>>;
+  postDelete?: Resolver<ResolversTypes['PostPayload'], ParentType, ContextType, RequireFields<MutationPostDeleteArgs, 'postId'>>;
   postUpdate?: Resolver<ResolversTypes['PostPayload'], ParentType, ContextType, RequireFields<MutationPostUpdateArgs, 'post' | 'postId'>>;
 }>;
 
