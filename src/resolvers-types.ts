@@ -16,11 +16,17 @@ export type Scalars = {
   Float: number;
 };
 
+export type CredentialsInput = {
+  email: Scalars['String'];
+  password: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   postCreate: PostPayload;
   postDelete: PostPayload;
   postUpdate: PostPayload;
+  signIn: UserPayLoad;
   signUp: UserPayLoad;
 };
 
@@ -41,11 +47,15 @@ export type MutationPostUpdateArgs = {
 };
 
 
+export type MutationSignInArgs = {
+  credentials: CredentialsInput;
+};
+
+
 export type MutationSignUpArgs = {
   bio: Scalars['String'];
-  email: Scalars['String'];
+  credentials: CredentialsInput;
   name: Scalars['String'];
-  password: Scalars['String'];
 };
 
 export type Post = {
@@ -172,6 +182,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  CredentialsInput: CredentialsInput;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Mutation: ResolverTypeWrapper<{}>;
   Post: ResolverTypeWrapper<PostModel>;
@@ -188,6 +199,7 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean'];
+  CredentialsInput: CredentialsInput;
   ID: Scalars['ID'];
   Mutation: {};
   Post: PostModel;
@@ -205,7 +217,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   postCreate?: Resolver<ResolversTypes['PostPayload'], ParentType, ContextType, RequireFields<MutationPostCreateArgs, 'post'>>;
   postDelete?: Resolver<ResolversTypes['PostPayload'], ParentType, ContextType, RequireFields<MutationPostDeleteArgs, 'postId'>>;
   postUpdate?: Resolver<ResolversTypes['PostPayload'], ParentType, ContextType, RequireFields<MutationPostUpdateArgs, 'post' | 'postId'>>;
-  signUp?: Resolver<ResolversTypes['UserPayLoad'], ParentType, ContextType, RequireFields<MutationSignUpArgs, 'bio' | 'email' | 'name' | 'password'>>;
+  signIn?: Resolver<ResolversTypes['UserPayLoad'], ParentType, ContextType, RequireFields<MutationSignInArgs, 'credentials'>>;
+  signUp?: Resolver<ResolversTypes['UserPayLoad'], ParentType, ContextType, RequireFields<MutationSignUpArgs, 'bio' | 'credentials' | 'name'>>;
 }>;
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = ResolversObject<{

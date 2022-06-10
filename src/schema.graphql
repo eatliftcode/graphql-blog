@@ -6,7 +6,8 @@ type Mutation {
     postCreate(post: PostInput!) : PostPayload!
     postUpdate(postId: ID!, post: PostInput!) : PostPayload!
     postDelete(postId: ID!): PostPayload!
-    signUp(email: String!, name: String!, password: String!, bio: String!): UserPayLoad!
+    signUp(credentials: CredentialsInput!, name: String!, bio: String!): UserPayLoad!
+    signIn(credentials: CredentialsInput!): UserPayLoad!
 }
 type PostPayload {
     userErrors: [UserError!]!
@@ -48,4 +49,9 @@ type Profile {
 input PostInput{
     title: String
     content: String
+}
+
+input CredentialsInput{
+    email: String!
+    password: String!
 }

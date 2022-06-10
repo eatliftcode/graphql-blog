@@ -1,8 +1,10 @@
+import { getJwtToken } from './getJwtToken';
 import { Context } from "./index"
 import { Resolvers, MutationPostCreateArgs, MutationSignUpArgs, PostPayload, Post, PostInput, MutationPostUpdateArgs, MutationPostDeleteArgs } from "./resolvers-types"
 import validator from "validator"
 import bcrypt from "bcryptjs"
 import JWT from "jsonwebtoken"
+import { User } from "@prisma/client"
 export const resolvers :Resolvers = {
         Query: {
             posts: async(_:any, __:any, {prisma}: Context) =>{
@@ -71,18 +73,19 @@ export const resolvers :Resolvers = {
                 return {userErrors: [], post}
             },
             signUp : async (_:any, args: MutationSignUpArgs, {prisma}: Context) => {
-                const {email, password, bio, name} = args
-                const isEmail = validator.isEmail(args.email)
+                const { bio, name} = args
+                const {email, password} = args.credentials
+                const isEmail = validator.isEmail(email)
 
                 if(!isEmail){
                     return{userErrors: [{message: "Invalid email."}]}
                 }
-                const isValidPassword = validator.isLength(args.password,{min: 5} )
+                const isValidPassword = validator.isLength(password,{min: 5} )
                 if(!isValidPassword){
                     return{userErrors: [{message: "Invalid password."}]}
                 } 
 
-                const hashedPassword = await bcrypt.hash(args.password, 10)
+                const hashedPassword = await bcrypt.hash(password, 10)
 
                 const user = await prisma.user.create({
                     data:{
@@ -91,11 +94,34 @@ export const resolvers :Resolvers = {
                         name,
                     }
                 })
-                const secretKey = process.env.JWT_SIGNATURE
-                const token = await JWT.sign({
-                    userId: user.id,
-                    email: user.email
-                }, secretKey!, {expiresIn: 360000} )
+
+                await prisma.profile.create({
+                    data:{
+                        bio,
+                        userId: user.id
+                    }
+                })
+                const token = getJwtToken(user.id)
+
+                return {userErrors: [], token}
+            },
+            signIn: async(_: any, {credentials}, {prisma}: Context) =>{
+                const {email, password} = credentials;
+
+                const user = await prisma.user.findUnique({
+                    where: {
+                        email: email,
+                    }
+                })
+                if(!user){
+                    return {userErrors: [{message: "user not found"}]}
+                }
+                const isMatch = await  bcrypt.compare(password, user.password)
+                if(!isMatch){
+                    return {userErrors: [{message: "Invalid credentials"}]}
+                }
+                const token = getJwtToken(user.id)
+
                 return {userErrors: [], token}
             }
     }
