@@ -1,4 +1,4 @@
-import { getJwtToken } from './getJwtToken';
+import { getJwtToken } from './utils/getJwtToken';
 import { Context } from "./index"
 import { Resolvers, MutationPostCreateArgs, MutationSignUpArgs, PostPayload, Post, PostInput, MutationPostUpdateArgs, MutationPostDeleteArgs } from "./resolvers-types"
 import validator from "validator"
@@ -14,7 +14,11 @@ export const resolvers :Resolvers = {
             }
         },
         Mutation : {
-            postCreate: async (_: any, {post} : MutationPostCreateArgs  , {prisma}: Context)  =>{
+            postCreate: async (_: any, {post} : MutationPostCreateArgs  , {userId, prisma}: Context)  =>{
+                if(!userId){
+                    return {userErrors: [{message: "Fotbidden access"}]}
+                }
+                console.log(userId)
                 const {title, content} = post
 
                 if(!title || !content){
@@ -24,7 +28,7 @@ export const resolvers :Resolvers = {
                     data: {
                         title,
                         content,
-                        authorId: 1
+                        authorId: userId
                     }
                 })
             return {userErrors: [],post: result}

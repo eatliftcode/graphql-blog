@@ -1,6 +1,7 @@
+import { getUserFromJwtToken } from './utils/getUserFromJwtToken';
 import 'dotenv/config'
 import { ApolloServer} from "apollo-server";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient, Prisma, User } from "@prisma/client";
 import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader";
 import { loadSchemaSync } from "@graphql-tools/load";
 import { resolvers } from "./resolvers";
@@ -10,15 +11,20 @@ const typeDefs = loadSchemaSync("src/schema.graphql", {
 const prisma = new PrismaClient();
 
 export interface Context {
+    userId: number | undefined
     prisma : PrismaClient<Prisma.PrismaClientOptions, never, Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined>
 }
 
 const server = new ApolloServer({
     typeDefs,
     resolvers ,
-    context: {
-        prisma
-    }
+    context: ({req} : any) => {
+        const user = getUserFromJwtToken(req.headers.authorization) 
+        return{
+            userId: user?.userId,
+            prisma
+        }
+    }   
 })
 
 server.listen().then(({url}) =>{
