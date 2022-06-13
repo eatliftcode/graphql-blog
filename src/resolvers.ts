@@ -1,3 +1,4 @@
+import { canUserMutatePost } from './utils/canUserMutatePost';
 import { getJwtToken } from './utils/getJwtToken';
 import { Context } from "./index"
 import { Resolvers, MutationPostCreateArgs, MutationSignUpArgs, PostPayload, Post, PostInput, MutationPostUpdateArgs, MutationPostDeleteArgs } from "./resolvers-types"
@@ -33,7 +34,15 @@ export const resolvers :Resolvers = {
                 })
             return {userErrors: [],post: result}
             },
-            postUpdate: async (_: any, args: MutationPostUpdateArgs, {prisma}: Context) => {
+            postUpdate: async (_: any, args: MutationPostUpdateArgs, {userId, prisma}: Context) => {
+                if(!userId){
+                    return {userErrors: [{message: "Fotbidden access"}]}
+                }
+                const userCan = await canUserMutatePost(userId, Number(args.postId), prisma)
+               
+                if(!userCan){
+                    return {userErrors: [{message: "User not authorized to update the post"}]}
+                }
                 const {title, content} = args.post;
                 if(!args.postId){
                     return {userErrors: [{message: "Post id not provided"}]}
@@ -60,11 +69,20 @@ export const resolvers :Resolvers = {
                 })
                 return {userErrors: [], post}
             },
-            postDelete : async (_:any, args: MutationPostDeleteArgs, {prisma}: Context) => {
+            postDelete : async (_:any, args: MutationPostDeleteArgs, {userId, prisma}: Context) => {
+                
                 if(!args.postId){
                     return {userErrors: [{message: "Post id not provided"}]}
                 }
 
+                if(!userId){
+                    return {userErrors: [{message: "Fotbidden access"}]}
+                }
+                const userCan = await canUserMutatePost(userId, Number(args.postId), prisma)
+               
+                if(!userCan){
+                    return {userErrors: [{message: "User not authorized to update the post"}]}
+                }
                 const existingPost = await prisma.post.findUnique({where: {id: Number(args.postId)}})
                 if(!existingPost){
                     return{userErrors: [{message: "Post not found"}]}
