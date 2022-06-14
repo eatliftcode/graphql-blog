@@ -1,5 +1,5 @@
 import { GraphQLResolveInfo } from 'graphql';
-import { Post as PostModel, User as UserModel } from '@prisma/client';
+import { Post as PostModel, User as UserModel, Profile as ProfileModel } from '@prisma/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -90,13 +90,19 @@ export type Profile = {
   __typename?: 'Profile';
   bio: Scalars['String'];
   id: Scalars['ID'];
-  user: User;
+  user?: Maybe<User>;
 };
 
 export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
   posts: Array<Post>;
+  profile?: Maybe<Profile>;
+};
+
+
+export type QueryProfileArgs = {
+  userId: Scalars['ID'];
 };
 
 export type User = {
@@ -105,7 +111,6 @@ export type User = {
   id: Scalars['ID'];
   name: Scalars['String'];
   posts: Array<Post>;
-  profile: Profile;
 };
 
 export type UserError = {
@@ -196,7 +201,7 @@ export type ResolversTypes = ResolversObject<{
   Post: ResolverTypeWrapper<PostModel>;
   PostInput: PostInput;
   PostPayload: ResolverTypeWrapper<Omit<PostPayload, 'post'> & { post?: Maybe<ResolversTypes['Post']> }>;
-  Profile: ResolverTypeWrapper<Omit<Profile, 'user'> & { user: ResolversTypes['User'] }>;
+  Profile: ResolverTypeWrapper<ProfileModel>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   User: ResolverTypeWrapper<UserModel>;
@@ -213,7 +218,7 @@ export type ResolversParentTypes = ResolversObject<{
   Post: PostModel;
   PostInput: PostInput;
   PostPayload: Omit<PostPayload, 'post'> & { post?: Maybe<ResolversParentTypes['Post']> };
-  Profile: Omit<Profile, 'user'> & { user: ResolversParentTypes['User'] };
+  Profile: ProfileModel;
   Query: {};
   String: Scalars['String'];
   User: UserModel;
@@ -249,13 +254,14 @@ export type PostPayloadResolvers<ContextType = any, ParentType extends Resolvers
 export type ProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = ResolversObject<{
   bio?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   posts?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfileArgs, 'userId'>>;
 }>;
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
@@ -263,7 +269,6 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   posts?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType>;
-  profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
