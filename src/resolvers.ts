@@ -1,7 +1,7 @@
 import { canUserMutatePost } from './utils/canUserMutatePost';
 import { getJwtToken } from './utils/getJwtToken';
 import { Context } from "./index"
-import { Resolvers, MutationPostCreateArgs, MutationSignUpArgs, PostPayload, Post, PostInput, MutationPostUpdateArgs, MutationPostDeleteArgs } from "./resolvers-types"
+import { Resolvers, MutationPostCreateArgs, MutationSignUpArgs, PostPayload, Post, PostInput, MutationPostUpdateArgs, MutationPostDeleteArgs, MutationPostPublishUnPublishArgs } from "./resolvers-types"
 import validator from "validator"
 import bcrypt from "bcryptjs"
 import JWT from "jsonwebtoken"
@@ -70,7 +70,6 @@ export const resolvers :Resolvers = {
                 return {userErrors: [], post}
             },
             postDelete : async (_:any, args: MutationPostDeleteArgs, {userId, prisma}: Context) => {
-                
                 if(!args.postId){
                     return {userErrors: [{message: "Post id not provided"}]}
                 }
@@ -93,6 +92,26 @@ export const resolvers :Resolvers = {
                     }
                 })
                 return {userErrors: [], post}
+            },
+            postPublishUnPublish: async (_: any, {postId, publish}: MutationPostPublishUnPublishArgs, {userId,prisma}: Context) =>{
+                if(!postId){
+                    return {userErrors: [{message: "Post id not provided"}]}
+                }
+
+                if(!userId){
+                    return {userErrors: [{message: "Fotbidden access"}]}
+                }
+                const userCan = await canUserMutatePost(userId, Number(postId), prisma)
+               
+                const post = prisma.post.update({
+                    data: {
+                        published: publish
+                    },
+                    where: {
+                        id: Number(postId)
+                    }
+                })
+                return {userErrors:[], post}
             },
             signUp : async (_:any, args: MutationSignUpArgs, {prisma}: Context) => {
                 const { bio, name} = args

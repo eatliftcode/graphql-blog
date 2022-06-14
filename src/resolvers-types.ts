@@ -25,6 +25,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   postCreate: PostPayload;
   postDelete: PostPayload;
+  postPublishUnPublish: PostPayload;
   postUpdate: PostPayload;
   signIn: UserPayLoad;
   signUp: UserPayLoad;
@@ -38,6 +39,12 @@ export type MutationPostCreateArgs = {
 
 export type MutationPostDeleteArgs = {
   postId: Scalars['ID'];
+};
+
+
+export type MutationPostPublishUnPublishArgs = {
+  postId: Scalars['ID'];
+  publish: Scalars['Boolean'];
 };
 
 
@@ -216,6 +223,7 @@ export type ResolversParentTypes = ResolversObject<{
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   postCreate?: Resolver<ResolversTypes['PostPayload'], ParentType, ContextType, RequireFields<MutationPostCreateArgs, 'post'>>;
   postDelete?: Resolver<ResolversTypes['PostPayload'], ParentType, ContextType, RequireFields<MutationPostDeleteArgs, 'postId'>>;
+  postPublishUnPublish?: Resolver<ResolversTypes['PostPayload'], ParentType, ContextType, RequireFields<MutationPostPublishUnPublishArgs, 'postId' | 'publish'>>;
   postUpdate?: Resolver<ResolversTypes['PostPayload'], ParentType, ContextType, RequireFields<MutationPostUpdateArgs, 'post' | 'postId'>>;
   signIn?: Resolver<ResolversTypes['UserPayLoad'], ParentType, ContextType, RequireFields<MutationSignInArgs, 'credentials'>>;
   signUp?: Resolver<ResolversTypes['UserPayLoad'], ParentType, ContextType, RequireFields<MutationSignUpArgs, 'bio' | 'credentials' | 'name'>>;
