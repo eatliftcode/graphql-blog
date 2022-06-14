@@ -40,12 +40,8 @@ export const resolvers :Resolvers = {
             }
         },
         Post: {
-            user: async(parent:any, __: any, {prisma}: Context)=>{
-                return prisma.user.findUnique({
-                    where:{
-                        id: parent.authorId
-                    }
-                })
+            user: async(parent:any, __: any, {userLoader}: Context)=>{
+                return userLoader.load(parent.authorId)
             }
         },
         User: {
