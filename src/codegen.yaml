@@ -6,6 +6,7 @@ generates:
       mapperTypeSuffix: Model
       mappers:
         Post: '@prisma/client#Post'
+        User: '@prisma/client#User'
     plugins:
       - typescript
       - typescript-resolvers

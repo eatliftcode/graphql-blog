@@ -1,5 +1,5 @@
 import { GraphQLResolveInfo } from 'graphql';
-import { Post as PostModel } from '@prisma/client';
+import { Post as PostModel, User as UserModel } from '@prisma/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -95,6 +95,7 @@ export type Profile = {
 
 export type Query = {
   __typename?: 'Query';
+  me?: Maybe<User>;
   posts: Array<Post>;
 };
 
@@ -198,7 +199,7 @@ export type ResolversTypes = ResolversObject<{
   Profile: ResolverTypeWrapper<Omit<Profile, 'user'> & { user: ResolversTypes['User'] }>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
-  User: ResolverTypeWrapper<Omit<User, 'posts' | 'profile'> & { posts: Array<ResolversTypes['Post']>, profile: ResolversTypes['Profile'] }>;
+  User: ResolverTypeWrapper<UserModel>;
   UserError: ResolverTypeWrapper<UserError>;
   UserPayLoad: ResolverTypeWrapper<UserPayLoad>;
 }>;
@@ -215,7 +216,7 @@ export type ResolversParentTypes = ResolversObject<{
   Profile: Omit<Profile, 'user'> & { user: ResolversParentTypes['User'] };
   Query: {};
   String: Scalars['String'];
-  User: Omit<User, 'posts' | 'profile'> & { posts: Array<ResolversParentTypes['Post']>, profile: ResolversParentTypes['Profile'] };
+  User: UserModel;
   UserError: UserError;
   UserPayLoad: UserPayLoad;
 }>;
@@ -253,6 +254,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   posts?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType>;
 }>;
 

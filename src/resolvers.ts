@@ -8,6 +8,15 @@ import JWT from "jsonwebtoken"
 import { User } from "@prisma/client"
 export const resolvers :Resolvers = {
         Query: {
+            me: async(_:any, __: any, {userId, prisma}: Context) =>{
+                if(!userId) return null;
+
+                return prisma.user.findUnique({
+                    where:{
+                        id: Number(userId)
+                    }
+                })
+            },
             posts: async(_:any, __:any, {prisma}: Context) =>{
                 return await prisma.post.findMany({
                     orderBy: [{createdAt: 'desc'}]
