@@ -4,6 +4,7 @@ import { Context } from "./index"
 import { Resolvers, MutationPostCreateArgs, MutationSignUpArgs, PostPayload, Post, PostInput, MutationPostUpdateArgs, MutationPostDeleteArgs, MutationPostPublishUnPublishArgs, QueryProfileArgs, Profile } from "./resolvers-types"
 import validator from "validator"
 import bcrypt from "bcryptjs"
+import { printSchema } from 'graphql';
 export const resolvers :Resolvers = {
         Query: {
             me: async(_:any, __: any, {userId, prisma}: Context) =>{
@@ -17,6 +18,7 @@ export const resolvers :Resolvers = {
             },
             posts: async(_:any, __:any, {prisma}: Context) =>{
                 return await prisma.post.findMany({
+                    where:{published: true},
                     orderBy: [{createdAt: 'desc'}]
                 })
             },
@@ -30,10 +32,36 @@ export const resolvers :Resolvers = {
         },
         Profile : {
             user: async (parent: any, __:any, {prisma}: Context) => {
-                console.log(parent)
                 return prisma.user.findUnique({
                     where: {
                         id: parent.userId
+                    }
+                })
+            }
+        },
+        Post: {
+            user: async(parent:any, __: any, {prisma}: Context)=>{
+                return prisma.user.findUnique({
+                    where:{
+                        id: parent.authorId
+                    }
+                })
+            }
+        },
+        User: {
+            posts: async(parent: any, __:any,{userId, prisma}: Context)=>{
+                const isOwnProfile = parent.id == userId;
+                if(isOwnProfile){
+                    return prisma.post.findMany({
+                        where: {
+                            authorId: parent.id
+                        }
+                    })
+                }
+                return prisma.post.findMany({
+                    where: {
+                        published: true,
+                        authorId: parent.id
                     }
                 })
             }

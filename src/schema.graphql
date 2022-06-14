@@ -32,7 +32,7 @@ type Post {
     content: String!
     createdAt: String!
     published: Boolean!
-    user: User!
+    user: User
 }
 
 type User {

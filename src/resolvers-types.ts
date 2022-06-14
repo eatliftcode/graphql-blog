@@ -72,7 +72,7 @@ export type Post = {
   id: Scalars['ID'];
   published: Scalars['Boolean'];
   title: Scalars['String'];
-  user: User;
+  user?: Maybe<User>;
 };
 
 export type PostInput = {
@@ -241,7 +241,7 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
